@@ -13,4 +13,6 @@ public interface IStudentController {
 	public Student getStudentById(Long id);
 	
 	public void deleteStudent(Long id);
+	
+	public Student updateStudent(Long id, Student updateStudent);
 }
