@@ -2,17 +2,18 @@ package com.ertanalabay.controller;
 
 import java.util.List;
 
-import com.ertanalabay.entities.Student;
+import com.ertanalabay.dto.DtoStudent;
+import com.ertanalabay.dto.DtoStudentIU;
 
 public interface IStudentController {
 
-	public Student saveStudent(Student student);
+	public DtoStudent saveStudent(DtoStudentIU dtoStudentIU);
 
-	public List<Student> getAllStudents();
+	public List<DtoStudent> getAllStudents();
 	
-	public Student getStudentById(Long id);
+	public DtoStudent getStudentById(Long id);
 	
 	public void deleteStudent(Long id);
 	
-	public Student updateStudent(Long id, Student updateStudent);
+	public DtoStudent updateStudent(Long id, DtoStudentIU dtoStudentIU);
 }

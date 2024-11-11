@@ -1,11 +1,15 @@
 package com.ertanalabay.services.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.ertanalabay.dto.DtoStudent;
+import com.ertanalabay.dto.DtoStudentIU;
 import com.ertanalabay.entities.Student;
 import com.ertanalabay.repository.StudentRepository;
 import com.ertanalabay.services.IStudentService;
@@ -17,52 +21,74 @@ public class StudentServiceImpl implements IStudentService{
 	private StudentRepository studentRepository;
 	
 	@Override
-	public Student saveStudent(Student student) {
-		return studentRepository.save(student);
+	public DtoStudent saveStudent(DtoStudentIU dtoStudentIU) {
+		
+		DtoStudent response = new DtoStudent();
+		Student student = new Student();
+		BeanUtils.copyProperties(dtoStudentIU, student);
+		
+		Student dbStudent = studentRepository.save(student);
+		BeanUtils.copyProperties(dbStudent, response);
+		return response;
 	}
 	
 	@Override
-	public List<Student> getAllStudents() {
+	public List<DtoStudent> getAllStudents() {
+		
+		// dtoList adında bi liste oluşturur. 
+		// Bu listeye Bean yardımıyla Student clasındaki verileri foreach'le ekler.
+		// En son da listeyi(dtoList) döner.
+		List<DtoStudent> dtoList = new ArrayList<>();
+		
 		List<Student> studentList = studentRepository.findAll();
-		return studentList;
+		for (Student student : studentList) {
+			DtoStudent dto = new DtoStudent();
+			BeanUtils.copyProperties(student, dto);
+			dtoList.add(dto);
+		}
+		return dtoList;
 	}
 	
 	@Override
-	public Student getStudentById(Long id) {
+	public DtoStudent getStudentById(Long id) {
+		DtoStudent dto = new DtoStudent();
 		Optional<Student> optional = studentRepository.findById(id);
 		if(optional.isPresent()) {
-			return optional.get();
+			Student dbStudent =  optional.get();
+			
+			BeanUtils.copyProperties(dbStudent, dto);
 		}
-		return null;
+		return dto;
 	}
 
 	@Override
 	public void deleteStudent(Long id) {
 		
-		/* Alternatif
-		 * 
-		Student dbStudent = getStudentById(id);
-		if (dbStudent != null) {
-			studentRepository.delete(dbStudent);
+		Optional<Student> optional = studentRepository.findById(id);
+		if (optional.isPresent()) {
+			studentRepository.delete(optional.get());
 		}
-		
-		*/
-		studentRepository.deleteById(id);
 		
 	}
 
 	@Override
-	public Student updateStudent(Long id, Student updateStudent) {
+	public DtoStudent updateStudent(Long id, DtoStudentIU dtoStudentIU) {
 
-		Student dbStudent = getStudentById(id);
-		if (dbStudent != null){
-			dbStudent.setFirstName(updateStudent.getFirstName());
-			dbStudent.setLastName(updateStudent.getLastName());
-			dbStudent.setBirthOfDate(updateStudent.getBirthOfDate());
+		DtoStudent dto = new DtoStudent();
+		
+		Optional<Student> optional = studentRepository.findById(id);
+		if (optional.isPresent()) {
+			Student dbStudent = optional.get();
 			
-			return studentRepository.save(dbStudent);
+			dbStudent.setFirstName(dtoStudentIU.getFirstName());
+			dbStudent.setLastName(dtoStudentIU.getLastName());
+			dbStudent.setBirthOfDate(dtoStudentIU.getBirthOfDate());
+		
+			Student updatedStudent = studentRepository.save(dbStudent);
+			
+			BeanUtils.copyProperties(updatedStudent, dto);
+			return dto;
 		}
-				
 		return null;
 	}
 }
