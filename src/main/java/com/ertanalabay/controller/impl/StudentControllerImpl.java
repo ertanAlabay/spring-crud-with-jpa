@@ -17,6 +17,8 @@ import com.ertanalabay.dto.DtoStudent;
 import com.ertanalabay.dto.DtoStudentIU;
 import com.ertanalabay.services.IStudentService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/rest/api/student")
 public class StudentControllerImpl implements IStudentController{
@@ -26,7 +28,7 @@ public class StudentControllerImpl implements IStudentController{
 	
 	@PostMapping(path = "/save")
 	@Override
-	public DtoStudent saveStudent(@RequestBody DtoStudentIU dtoStudentIU) {
+	public DtoStudent saveStudent(@RequestBody @Valid DtoStudentIU dtoStudentIU) {
 		return studentService.saveStudent(dtoStudentIU);
 	}
 	
